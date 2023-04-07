@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 public class BlogPost {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long ID;
+    private Long id;
     private String title;
     private String text;
     private String createdAt;
@@ -24,9 +24,8 @@ public class BlogPost {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
     public Long getID() {
-        return ID;
+        return id;
     }
 
     public void setTitle(String title) {

@@ -14,6 +14,10 @@ public class BlogTag {
     public BlogTag() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
     private String name;
 
     public String getName() {
