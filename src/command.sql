@@ -1,0 +1,2 @@
+CREATE DATABASE blog;
+ALTER DATABASE blog OWNER TO postgres;
