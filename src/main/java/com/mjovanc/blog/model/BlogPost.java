@@ -1,9 +1,11 @@
 package com.mjovanc.blog.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class BlogPost {
@@ -15,6 +17,15 @@ public class BlogPost {
     private String createdAt;
     private String updatedAt;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "blog_post_tag",
+            joinColumns = {@JoinColumn(name = "blog_post_id")},
+            inverseJoinColumns = {@JoinColumn(name = "blog_post_tag_id")}
+    )
+    @JsonProperty("blog_tags")
+    public List<BlogTag> blogTags;
+
     public BlogPost() {
     }
 
@@ -24,6 +35,7 @@ public class BlogPost {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
     public Long getID() {
         return id;
     }
@@ -58,5 +70,16 @@ public class BlogPost {
 
     public String getTitle() {
         return title;
+    }
+
+    @JsonGetter("blog_tags")
+    public List<String> getAllBlogTags() {
+        if (blogTags != null) {
+            return blogTags.stream()
+                    .map(bt -> {
+                        return "/v1/tags/" + bt.getId();
+                    }).collect(Collectors.toList());
+        }
+        return null;
     }
 }
