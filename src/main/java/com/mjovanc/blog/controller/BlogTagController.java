@@ -38,7 +38,7 @@ public class BlogTagController {
     @PostMapping
     public ResponseEntity<BlogTag> createBlogTag(@RequestBody BlogTag blogTag) {
         blogTagService.create(blogTag);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(blogTagService.create(blogTag), HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")

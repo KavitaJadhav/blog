@@ -21,8 +21,8 @@ public class BlogTagService {
         return blogTagRepository.findAll();
     }
 
-    public void create(BlogTag blogTag) {
-        blogTagRepository.save(blogTag);
+    public BlogTag create(BlogTag blogTag) {
+        return blogTagRepository.save(blogTag);
     }
 
     public BlogTag getBlogTagById(Long id) {
