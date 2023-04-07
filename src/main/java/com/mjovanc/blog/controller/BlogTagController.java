@@ -1,7 +1,7 @@
 package com.mjovanc.blog.controller;
 
 import com.mjovanc.blog.model.BlogTag;
-import com.mjovanc.blog.repository.BlogTagRepository;
+import com.mjovanc.blog.service.BlogTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,44 +13,51 @@ import java.util.List;
 @RequestMapping("v1/tags")
 public class BlogTagController {
 
+    final BlogTagService blogTagService;
+
     @Autowired
-    BlogTagRepository blogTagRepository;
+    public BlogTagController(BlogTagService blogTagService) {
+        this.blogTagService = blogTagService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<BlogTag>> getAllTags() {
-        return new ResponseEntity<>(blogTagRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<BlogTag>> getAllBlogTag() {
+        return new ResponseEntity<>(blogTagService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<BlogTag> getTagById(@PathVariable Long id) {
-        if (blogTagRepository.existsById(id)) {
-            return new ResponseEntity<>(blogTagRepository.findById(id).get(), HttpStatus.OK);
+    public ResponseEntity<BlogTag> findById(@PathVariable Long id) {
+        BlogTag blogTag = blogTagService.getBlogTagById(id);
+        if (blogTag == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(blogTag, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
     public ResponseEntity<BlogTag> createBlogTag(@RequestBody BlogTag blogTag) {
-        blogTagRepository.save(blogTag);
-        return new ResponseEntity<>(HttpStatus.OK);
+        blogTagService.create(blogTag);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<BlogTag> updateBlogTag(@PathVariable Long id, @RequestBody BlogTag blogTag) {
-        if (blogTagRepository.existsById(id)) {
-            BlogTag blogTagInDB = blogTagRepository.findById(id).get();
-            blogTagInDB.setName(blogTag.getName());
-            return new ResponseEntity(blogTagInDB, HttpStatus.OK);
+        BlogTag updatedblogTag = blogTagService.update(id, blogTag);
+
+        if (updatedblogTag == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(updatedblogTag, HttpStatus.OK);
         }
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<BlogTag> deleteBlogTag(@PathVariable Long id) {
-        if (blogTagRepository.existsById(id)) {
-            BlogTag blogTag = blogTagRepository.findById(id).get();
-            blogTagRepository.delete(blogTag);
+        Boolean deleted = blogTagService.delete(id);
+        if (deleted) {
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
